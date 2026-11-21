@@ -1,0 +1,15 @@
+{
+  "name": "dcode-agents",
+  "description": "Derek Ditch's engineering skills for AI coding agents.",
+  "owner": {
+    "name": "Derek Ditch"
+  },
+  "plugins": [
+    {
+      "name": "dcode-agents",
+      "source": "./",
+      "description": "Engineering skills from a loose idea to merged code: design interviews, specs, tickets, test-first implementation, review, debugging, and Python / marimo tooling.",
+      "skills": "./skills/"
+    }
+  ]
+}

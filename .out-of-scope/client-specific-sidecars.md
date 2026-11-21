@@ -3,6 +3,10 @@
 Skills here carry no files or frontmatter keys that only one agent client understands, such as `agents/openai.yaml`
 (Codex display and invocation settings) or `argument-hint` (a Claude Code slash-command hint).
 
+This rule is about the skills. At the repo root, a client's distribution file is allowed when no portable equivalent
+exists: `.claude-plugin/marketplace.json` lets Claude Code install and update the plugin, because the Agent Plugins
+spec standardizes the package (`plugin.json`, `skills/`) but not how clients fetch or update it.
+
 ## Why this is out of scope
 
 The skills are meant to load unchanged in any client that implements the
