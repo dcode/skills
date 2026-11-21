@@ -2,7 +2,10 @@
 
 ## The Problem
 
-marimo loads the notebook file into memory at startup. After that, it works from its in-memory state and does **not** watch the file for external changes. If you edit the `.py` file externally (vim, VSCode, another agent), marimo won't see it. When any cell is saved in the marimo UI, it writes its in-memory version back to disk, **overwriting your external edits**.
+marimo loads the notebook file into memory at startup. After that, it works from its in-memory state and does **not**
+watch the file for external changes. If you edit the `.py` file externally (vim, VSCode, another agent), marimo won't
+see it. When any cell is saved in the marimo UI, it writes its in-memory version back to disk,
+**overwriting your external edits**.
 
 ## Solution: --watch
 
@@ -10,7 +13,8 @@ marimo loads the notebook file into memory at startup. After that, it works from
 marimo edit --watch notebook.py
 ```
 
-This monitors the file for changes and streams them to the browser editor. By default, synced code appears as "stale" — the user manually runs cells via the "Run" button or the `runStale` hotkey.
+This monitors the file for changes and streams them to the browser editor. By default, synced code appears as "stale" —
+the user manually runs cells via the "Run" button or the `runStale` hotkey.
 
 For apps:
 
@@ -52,4 +56,4 @@ Use case: develop logic in Python modules, use the notebook as an orchestrating 
 
 ## Responding to other files
 
-marimo has `mo.watch.file` and `mo.watch.file` utilities that can cause cells to update when a file/folder updates. 
+marimo has `mo.watch.file` and `mo.watch.file` utilities that can cause cells to update when a file/folder updates.

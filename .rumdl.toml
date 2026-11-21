@@ -14,6 +14,8 @@ line-length = 120
 code-blocks = false
 tables = false
 headings = true
+# `rumdl fmt` rewraps prose to the limit (code blocks and tables are left alone).
+reflow = true
 
 # Pin the styles the repo already uses so fixes stay consistent.
 [MD003]
@@ -42,4 +44,4 @@ siblings-only = true
 "skills/**/*.md" = ["MD033", "MD041"]
 # Scaffold templates contain placeholder tokens such as `__PKG__` and
 # `*DESCRIPTION*` that look like emphasis to the linter.
-"skills/*/templates/**/*.md" = ["MD033", "MD036", "MD041", "MD049", "MD050"]
+"skills/*/assets/templates/**/*.md" = ["MD033", "MD036", "MD041", "MD049", "MD050"]

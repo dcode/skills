@@ -2,7 +2,9 @@
 
 ## Reactivity IS State Management
 
-In marimo, regular Python variables between cells are your state. When a cell assigns a variable, all cells that read it re-run automatically. Widget values (`widget.value`) work the same way — interact with a widget and dependent cells re-execute. No store, no session_state, no hooks needed.
+In marimo, regular Python variables between cells are your state. When a cell assigns a variable, all cells that read it
+re-run automatically. Widget values (`widget.value`) work the same way — interact with a widget and dependent cells
+re-execute. No store, no session_state, no hooks needed.
 
 ## Don't Mutate Objects Across Cells
 

@@ -133,8 +133,8 @@ FAILED test_notebook.py::test_fails - AssertionError: This test fails
 
 ## Using Pytest Fixtures
 
-
-marimo supports pytest fixtures, with one limitation: fixtures defined in one cell cannot be used in another cell, unless the fixtures were defined in the setup cell.
+marimo supports pytest fixtures, with one limitation: fixtures defined in one cell cannot be used in another cell,
+unless the fixtures were defined in the setup cell.
 
 **Fixtures defined in the setup cell**:
 

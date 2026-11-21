@@ -1,0 +1,47 @@
+# Install once with: pre-commit install
+# Refresh the pinned revisions with: pre-commit autoupdate
+# Scaffold templates contain placeholder tokens (__PKG__ etc.) that are not valid until rendered.
+exclude: ^skills/python-project-scaffold/assets/templates/
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-executables-have-shebangs
+
+  - repo: https://github.com/rvben/rumdl-pre-commit
+    rev: v0.3.5
+    hooks:
+      - id: rumdl-fmt
+      - id: rumdl-check
+
+  # American English only. Add a justified exception (brand name, upstream API key) to --ignore-words-list.
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.3
+    hooks:
+      - id: codespell
+        name: codespell (American English spelling)
+        args:
+          - --builtin=en-GB_to_en-US
+          - --dictionary=-
+          - --dictionary=.codespell-en-us.txt
+          - --ignore-words-list=
+        exclude: ^\.codespell-en-us\.txt$
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1
+    hooks:
+      - id: shellcheck
+
+  - repo: local
+    hooks:
+      - id: validate-skills
+        name: validate skills (Agent Skills spec + repo conventions)
+        entry: python scripts/validate_skills.py skills
+        language: python
+        additional_dependencies: [pyyaml>=6]
+        files: ^(skills/|scripts/validate_skills\.py$)
+        pass_filenames: false

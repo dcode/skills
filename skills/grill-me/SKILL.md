@@ -1,7 +1,7 @@
 ---
 name: grill-me
-description: A relentless interview to sharpen a plan or design.
+description: Shortcut that starts a relentless interview to sharpen a plan or design. Use when the user says "grill me" or asks to be grilled or interrogated about a plan.
 disable-model-invocation: true
 ---
 
-Call the Skill tool with "grilling".
+Load the `grilling` skill ([../grilling/SKILL.md](../grilling/SKILL.md)) and follow it.

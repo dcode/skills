@@ -13,7 +13,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-TEMPLATES = Path(__file__).resolve().parent.parent / "templates"
+TEMPLATES = Path(__file__).resolve().parent.parent / "assets" / "templates"
 DIST_NAME = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*")
 PY_VERSION = re.compile(r"3\.(\d+)")
 KINDS = ("lib", "cli", "mcp")

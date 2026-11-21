@@ -1,0 +1,7 @@
+categorise->categorize
+categorised->categorized
+categorises->categorizes
+categorising->categorizing
+traveller->traveler
+travellers->travelers
+travelling->traveling
