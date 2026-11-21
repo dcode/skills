@@ -8,7 +8,30 @@ conventions they follow.
 
 ## Install
 
-To install globally for your user:
+### As a plugin
+
+The repo root is an [Agent Plugins](https://agent-plugins.org/specification) package: `plugin.json` describes it and
+`skills/` holds the skills. Clients that install plugins get every skill at once and pick up changes when they update.
+
+In Claude Code:
+
+```shell
+claude plugin marketplace add dcode/agents
+claude plugin install dcode-agents@dcode-agents
+```
+
+The plugin declares no `version`, so Claude Code treats every new commit on `main` as an update. To pull changes:
+
+```shell
+claude plugin marketplace update dcode-agents
+claude plugin update dcode-agents@dcode-agents
+```
+
+Or turn on auto-update for the `dcode-agents` marketplace in the `/plugin` menu so this happens at startup.
+
+### As a skills directory
+
+For clients without plugin support, install globally for your user:
 
 ```shell
 git clone https://github.com/dcode/agents.git ~/.agents

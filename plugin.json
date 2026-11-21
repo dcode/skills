@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "dcode-agents",
+  "description": "Engineering skills from a loose idea to merged code: design interviews, specs, tickets, test-first implementation, review, debugging, and Python / marimo tooling.",
+  "author": {
+    "name": "Derek Ditch",
+    "url": "https://github.com/dcode"
+  },
+  "homepage": "https://github.com/dcode/agents",
+  "repository": "https://github.com/dcode/agents",
+  "keywords": ["skills", "engineering", "planning", "tdd", "code-review", "python", "marimo", "tasknotes"]
+}

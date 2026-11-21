@@ -9,6 +9,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+      - id: check-json
       - id: check-added-large-files
       - id: check-executables-have-shebangs
 
@@ -35,6 +36,15 @@ repos:
     rev: v0.11.0.1
     hooks:
       - id: shellcheck
+
+  # plugin.json must match the Agent Plugins 1.0.0 manifest schema.
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.39.0
+    hooks:
+      - id: check-jsonschema
+        name: check plugin.json (Agent Plugins 1.0.0 schema)
+        files: ^plugin\.json$
+        args: [--schemafile, https://agent-plugins.org/schemas/1.0.0/plugin.schema.json]
 
   - repo: local
     hooks:

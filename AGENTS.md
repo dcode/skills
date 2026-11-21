@@ -37,6 +37,16 @@ intent, apply the conventions below, and generalize language-specific examples (
   Prototypes that need a UI are [marimo](https://marimo.io/) notebooks.
 - See `skills/writing-for-agents/references/SKILL-MECHANICS.md` for the full rules.
 
+## Packaging
+
+- The repo root is an [Agent Plugins](https://agent-plugins.org/specification) 1.0.0 package: `plugin.json` (portable
+  manifest, checked against the published schema by pre-commit) plus `skills/`. Keep `skills/` flat; plugin clients
+  only look at its immediate subdirectories.
+- `.claude-plugin/marketplace.json` makes the repo a Claude Code marketplace whose one plugin is the repo root. Check
+  changes with `claude plugin validate .`.
+- Neither manifest sets `version`, so clients that track git treat every commit on `main` as an update. If you add a
+  `version`, set the same SemVer value in both files and bump it on every release, or installs stop updating.
+
 ## Layout the skills write in a target repo
 
 - Specs and issues: `.scratch/<feature>/spec.md` and `.scratch/<feature>/issues/<NN>-<slug>.md`, issues as
