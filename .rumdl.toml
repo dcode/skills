@@ -1,0 +1,45 @@
+# rumdl configuration: https://github.com/rvben/rumdl
+#
+#   rumdl check .   # lint
+#   rumdl fmt .     # apply auto-fixes
+
+[global]
+# GitHub-flavored Markdown (tables, task lists, autolinks).
+flavor = "gfm"
+
+# Line length: 120 columns for prose and headings. Code blocks and tables are
+# exempt because wrapping them changes their meaning or breaks rendering.
+[MD013]
+line-length = 120
+code-blocks = false
+tables = false
+headings = true
+
+# Pin the styles the repo already uses so fixes stay consistent.
+[MD003]
+style = "atx"          # `# Heading`, not underlined headings
+
+[MD004]
+style = "dash"         # `- item` bullets
+
+[MD046]
+style = "fenced"       # fenced code blocks, not indented ones
+
+[MD048]
+style = "backtick"     # ``` fences, not ~~~
+
+[MD050]
+style = "asterisk"     # **strong**, not __strong__
+
+# Repeated headings are fine as long as they live under different parents
+# (e.g. "Usage" under several sections).
+[MD024]
+siblings-only = true
+
+[per-file-ignores]
+# Skills start with YAML frontmatter rather than an H1, and use XML-style tags
+# (e.g. `<spec-template>`) to delimit prompt sections for the agent.
+"skills/**/*.md" = ["MD033", "MD041"]
+# Scaffold templates contain placeholder tokens such as `__PKG__` and
+# `*DESCRIPTION*` that look like emphasis to the linter.
+"skills/*/templates/**/*.md" = ["MD033", "MD036", "MD041", "MD049", "MD050"]

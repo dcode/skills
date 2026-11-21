@@ -1,0 +1,49 @@
+name: Release
+
+# Push a tag like v0.2.0 (matching __version__) to test, build and publish a
+# GitHub release with the sdist and wheel attached.
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-version:
+    name: Tag matches package version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Compare tag with __version__
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(sed -nE 's/^__version__ = "([^"]+)"$/\1/p' src/__PKG__/__init__.py)"
+          if [ "v${version}" != "${TAG}" ]; then
+            echo "::error::Tag ${TAG} does not match __version__ ${version}"
+            exit 1
+          fi
+
+  ci:
+    name: CI
+    needs: verify-version
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    name: Publish GitHub release
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - name: Create release with build artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "${TAG}" dist/* --title "${TAG}" --generate-notes --verify-tag

@@ -1,0 +1,111 @@
+[project]
+name = "__DIST_NAME__"
+dynamic = ["version"]
+description = "__DESCRIPTION__"
+readme = "README.md"
+license = "__LICENSE__"
+license-files = ["LICENSE"]
+requires-python = ">=__PY_VERSION__"
+dependencies = [__DEPENDENCIES__]
+__SCRIPTS_BLOCK__
+[dependency-groups]
+dev = [
+    "pre-commit>=4.7",
+    "pytest>=9.0",
+    "pytest-asyncio>=1.4",
+    "pytest-cov>=7.1",
+    "ruff>=0.17",
+    "ty>=0.0.100",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/__PKG__/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/__PKG__"]
+
+# Default environment: `hatch run <script>` and `hatch shell`.
+[tool.hatch.envs.default]
+installer = "uv"
+dependency-groups = ["dev"]
+
+[tool.hatch.envs.default.scripts]
+types = "ty check {args}"
+hooks = "pre-commit run --all-files {args}"
+check = [
+    "hooks",
+    "pytest",
+]
+
+# `hatch test`: coverage comes from pytest-cov (see [tool.pytest.ini_options]),
+# so plain runs and `--cover` runs behave the same and both enforce the threshold.
+[tool.hatch.envs.hatch-test]
+installer = "uv"
+default-args = ["tests"]
+extra-dependencies = [
+    "pytest-asyncio>=1.4",
+    "pytest-cov>=7.1",
+]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["__PY_VERSION__"]
+
+[tool.hatch.envs.hatch-test.scripts]
+run = "pytest{env:HATCH_TEST_ARGS:} {args}"
+run-cov = "pytest{env:HATCH_TEST_ARGS:} {args}"
+cov-combine = "python -c \"\""
+cov-report = "coverage report"
+
+# `hatch fmt`: use this project's [tool.ruff] settings instead of hatch's defaults.
+[tool.hatch.envs.hatch-static-analysis]
+installer = "uv"
+config-path = "none"
+dependencies = ["ruff>=0.17"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+addopts = ["--cov", "--cov-report=term-missing:skip-covered"]
+
+[tool.coverage.run]
+source = ["__PKG__"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+exclude_also = ["if TYPE_CHECKING:"]
+
+[tool.ruff]
+line-length = 100
+target-version = "__PY_TAG__"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "D", "ANN", "ASYNC", "PT", "S", "RUF"]
+# D203/D213 conflict with D211/D212, which the google convention keeps.
+ignore = ["D203", "D213"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use assert by design (S101) and need neither docstrings nor return annotations.
+"tests/*" = ["D", "ANN", "ASYNC240", "S101"]
+
+[tool.ty.environment]
+python-version = "__PY_VERSION__"
+
+[tool.ty.src]
+include = ["src", "tests"]
+
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.rumdl]
+line-length = 100
+exclude = [".venv", "LICENSE"]

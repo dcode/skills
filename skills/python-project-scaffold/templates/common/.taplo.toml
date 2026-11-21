@@ -1,0 +1,9 @@
+# taplo does not read pyproject.toml for its own settings, so they live here.
+include = ["*.toml", ".taplo.toml"]
+exclude = [".venv/**"]
+
+[formatting]
+column_width = 100
+indent_string = "    "
+array_auto_expand = true
+array_auto_collapse = false
