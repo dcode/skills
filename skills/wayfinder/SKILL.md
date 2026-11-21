@@ -1,6 +1,7 @@
 ---
 name: wayfinder
-description: Plan a huge chunk of work (more than one agent session can hold) as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.
+description: Plan a huge, foggy chunk of work (more than one agent session can hold) as a shared map of decision tickets on the repo's issue tracker, then resolve them one per session until the way to the destination is clear. Use when the user brings a loose idea too big to spec in one go, or hands over an existing wayfinder map to keep working.
+compatibility: Designed for agents that can dispatch subagents (e.g. Goose CLI). Works with local TaskNotes or GitHub issues as configured by setup-skills.
 disable-model-invocation: true
 ---
 
@@ -36,7 +37,7 @@ link, but they ride _inside_ the name, never stand in for it.
 
 ## The Map
 
-The map is a single issue on this repo's issue tracker, labelled
+The map is a single issue on this repo's issue tracker, labeled
 `wayfinder:map`, the canonical artifact. Its tickets are child issues of the
 map.
 
@@ -45,10 +46,11 @@ the tickets that hold their detail; a decision lives in exactly one place, its
 ticket, so the map never restates it, only gists it and links.
 
 **Where the map, its child tickets, blocking, and frontier queries physically
-live is tracker-specific.** The issue tracker should have been provided to you.
-If not, tell the user to run `/setup-matt-pocock-skills`. Consult the tracker
-doc's "Wayfinding operations" section for how _this_ repo expresses them. If no
-tracker has been provided, default to the local-markdown tracker.
+live is tracker-specific.** Read the "Wayfinding operations" section of
+`docs/agents/issue-tracker.md` for how _this_ repo expresses them. If that file
+does not exist, tell the user to run the `setup-skills` skill; until they do,
+default to the local TaskNotes tracker
+([../setup-skills/assets/issue-tracker-local.md](../setup-skills/assets/issue-tracker-local.md)).
 
 ### The map body
 
@@ -119,15 +121,14 @@ side of it (a grilling agent that answers its own questions has broken this).
 
 - **Research** (AFK): Reading documentation, third-party APIs, or local resources
   like knowledge bases to surface a fact a decision waits on. Resolved by a
-  subagent that calls the Skill tool with "research". Use when knowledge outside
+  subagent that loads the `research` skill. Use when knowledge outside
   the current working directory is required.
-- **Prototype** (HITL): Raise the fidelity of the discussion by making a cheap,
-  rough, concrete artifact to react to (an outline, a rough take, a stub, or
-  UI/logic code) by calling the Skill tool with "prototype". Links the prototype
-  as an asset. Use when "how should it look" or "how should it behave" is the key
-  question.
-- **Grilling** (HITL): Conversation. The default case. Always call the Skill tool
-  twice, for "grilling" and "domain-modeling".
+- **Prototype** (HITL): Raise the fidelity of the discussion by making a cheap, rough, concrete artifact to react to (an
+  outline, a rough take, a stub, or UI/logic code); for code, load the `prototype` skill
+  ([../prototype/SKILL.md](../prototype/SKILL.md)). Links the prototype as an asset. Use when "how should it look" or
+  "how should it behave" is the key question.
+- **Grilling** (HITL): Conversation. The default case. Always load both the
+  `grilling` and `domain-modeling` skills (as `grill-with-docs` does).
 - **Task** (HITL or AFK): Manual work that must happen before a _decision_ can be
   made: nothing to decide, prototype, or research, but the discussion is blocked
   until it's done. Signing up for a service so its API can be judged, provisioning
@@ -194,8 +195,8 @@ the exception of research tickets.
 
 User invokes with a loose idea.
 
-1. **Name the destination.** Call the Skill tool twice, for "grilling" and
-   "domain-modeling", to pin down what this map is finding its way to: the spec,
+1. **Name the destination.** Load the `grilling` and `domain-modeling` skills
+   to pin down what this map is finding its way to: the spec,
    decision, or change. The destination fixes the scope, so it's settled first.
 2. **Map the frontier.** Grill again, **breadth-first** this time: fan out across
    the whole space rather than deep on any one thread, surfacing the open decisions
@@ -211,8 +212,8 @@ User invokes with a loose idea.
    frontier and the blocked; everything you can't yet specify stays in the fog: the
    **Not yet specified** section.
 5. **Fire the research subagents.** For each `research` ticket you just created,
-   spin up a subagent with a fresh context window that calls the Skill tool with
-   "research" to resolve it in parallel, capturing its findings on a throwaway
+   spin up a subagent with a fresh context window that loads the `research`
+   skill to resolve it in parallel, capturing its findings on a throwaway
    `research/<name>` branch with a context pointer from the ticket. Push the branch
    but open no PR: it is never merged.
 6. Stop: charting is one session's work; it hand-resolves nothing.
@@ -228,9 +229,8 @@ you pick the next decision, not the user.
 3. Resolve it as the type its `wayfinder:<type>` label names (see
    [Ticket Types](#ticket-types)). Read the label, not just the body: the body
    never states the type. **Zoom as needed**: fetch the full body of any related or
-   closed ticket on demand; call the Skill tool for whichever skills the `## Notes`
-   block names. If in doubt, call the Skill tool twice, for "grilling" and
-   "domain-modeling".
+   closed ticket on demand; load whichever skills the `## Notes`
+   block names. If in doubt, load the `grilling` and `domain-modeling` skills.
 4. Record the resolution: post the answer as a **resolution comment**, **close**
    the issue, and **append a context pointer** to the map's Decisions-so-far.
 5. Add newly-surfaced tickets (create-then-wire); graduate any fog the answer has

@@ -7,7 +7,8 @@ marimo statically analyzes each cell to build a directed acyclic graph:
 - **References** = global variables the cell reads (function parameters)
 - **Definitions** = global variables the cell creates (return tuple)
 
-When a cell runs, all cells that reference its definitions automatically run. Execution order is determined by the DAG, not cell position on the page.
+When a cell runs, all cells that reference its definitions automatically run. Execution order is determined by the DAG,
+not cell position on the page.
 
 ## Variable Uniqueness
 
@@ -31,7 +32,8 @@ def _():
 
 ## Mutations Are Not Tracked
 
-marimo does **not** detect mutations like `.append()`, attribute assignment, or in-place DataFrame operations across cells.
+marimo does **not** detect mutations like `.append()`, attribute assignment, or in-place DataFrame operations across
+cells.
 
 ```python
 # BAD — mutation in another cell, marimo won't re-run dependents
@@ -61,8 +63,10 @@ Deleting a cell removes its global variables from memory. Cells that referenced 
 
 ## Disabling Cells
 
-Disable a cell to prevent it and its dependents from running. Re-enabling triggers a re-run if upstream cells changed while it was disabled.
+Disable a cell to prevent it and its dependents from running. Re-enabling triggers a re-run if upstream cells changed
+while it was disabled.
 
 ## Lazy Evaluation
 
-Instead of auto-running dependents, mark them stale for manual execution. Configure in runtime settings or use `mo.lazy()` for specific elements.
+Instead of auto-running dependents, mark them stale for manual execution. Configure in runtime settings or use
+`mo.lazy()` for specific elements.

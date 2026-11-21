@@ -1,6 +1,6 @@
 ---
 name: to-tickets
-description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker.
+description: Break a plan, spec, or the current conversation into dependency-ordered tracer-bullet tickets, each declaring its blocking edges, and publish them to the repo's configured tracker (local TaskNotes files or GitHub issues). Use when the user wants work split into tickets, tasks, issues, TaskNotes, or a backlog, or asks to turn a spec or plan into implementation tickets.
 disable-model-invocation: true
 ---
 
@@ -9,7 +9,8 @@ disable-model-invocation: true
 Break a plan, spec, or conversation into a set of **tickets**: tracer-bullet
 vertical slices, each declaring the tickets that **block** it.
 
-The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-skills`.
+Read `docs/agents/issue-tracker.md` (which tracker, and how to publish to it) and `docs/agents/triage-labels.md` (label
+strings). If they do not exist, tell the user to run the `setup-skills` skill.
 
 ## Process
 
@@ -66,7 +67,7 @@ Present the proposed breakdown as a numbered list. For each ticket, show:
 
 - **Title**: short descriptive name
 - **Blocked by**: which other tickets (if any) must complete first
-- **What it delivers**: the end-to-end behaviour this ticket makes work
+- **What it delivers**: the end-to-end behavior this ticket makes work
 
 Ask the user:
 
@@ -80,15 +81,16 @@ Iterate until the user approves the breakdown.
 ### 5. Publish the tickets to the configured tracker
 
 Publish the approved tickets. **How** depends on the tracker
-`/setup-matt-pocock-skills` configured; the tickets are the same either way,
+`docs/agents/issue-tracker.md` names; the tickets are the same either way,
 only the shape of the blocking edges changes:
 
-- **Local files** → write one file per ticket under
+- **Local TaskNotes** → write one TaskNotes file per ticket under
   `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in
-  dependency order (blockers first). Each file's "Blocked by" lists the
-  numbers/titles it depends on. Use the per-ticket file template below: one ticket
-  per file, never a single combined file.
-- **A real issue tracker (GitHub, Linear, …)** → publish one issue per
+  dependency order (blockers first), with blockers in the `blockedBy`
+  frontmatter. Use the TaskNote format in `docs/agents/issue-tracker.md`
+  (seeded from [../setup-skills/assets/issue-tracker-local.md](../setup-skills/assets/issue-tracker-local.md)):
+  one ticket per file, never a single combined file.
+- **A hosted issue tracker (GitHub, …)** → publish one issue per
   ticket in dependency order (blockers first) so each ticket's blocking edges
   can reference real identifiers. Use the platform's native blocking
   relationship where it has one; otherwise set each ticket's "Blocked by" to
@@ -102,22 +104,7 @@ linear chain that means top to bottom.
 
 Do NOT close or modify any parent issue.
 
-<local-ticket-template>
-
-# <NN>: <Ticket title> <!-- rumdl-disable-line MD025 -->
-
-**What to build:** the end-to-end behaviour this ticket makes work, from the
-user's perspective, not a layer-by-layer implementation list.
-
-**Blocked by:** the numbers/titles of the tickets that gate this one, or "None
-(can start immediately)".
-
-**Status:** ready-for-agent
-
-- [ ] Acceptance criterion 1
-- [ ] Acceptance criterion 2
-
-</local-ticket-template>
+For a hosted tracker, use this issue body:
 
 <issue-template>
 
@@ -128,7 +115,7 @@ issue, otherwise omit this section).
 
 ## What to build
 
-The end-to-end behaviour this ticket makes work, from the user's perspective,
+The end-to-end behavior this ticket makes work, from the user's perspective,
 not layer-by-layer implementation.
 
 ## Acceptance criteria

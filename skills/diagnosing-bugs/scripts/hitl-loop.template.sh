@@ -15,8 +15,9 @@ IFS=$'\n\t'
 # IMMUTABLE HARNESS — DO NOT EDIT ABOVE THE AGENT-EDITABLE SECTION
 # ==============================================================================
 
-readonly SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
-readonly RUN_ID="$(date -u +"%Y%m%dT%H%M%SZ")-$$"
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+RUN_ID="$(date -u +"%Y%m%dT%H%M%SZ")-$$"
+readonly SCRIPT_NAME RUN_ID
 
 BUNDLE_DIR="${BUNDLE_DIR:-/tmp/hitl-debug-${RUN_ID}}"
 ARCHIVE_BUNDLE=false
@@ -213,7 +214,7 @@ hitl_capture_reading() {
   [[ "$PROMPT_TIMEOUT" -gt 0 ]] && read_args=(-t "$PROMPT_TIMEOUT" "${read_args[@]}")
 
   local val=""
-  read "${read_args[@]}" val || exit 1
+  read -r "${read_args[@]}" val || exit 1
   record_event "HUMAN_READING" "[$reading_id] $val"
   cat <<EOF >> "$NOTES_FILE"
 ### Reading \`$reading_id\`
@@ -233,11 +234,11 @@ hitl_step() {
 
   _run_snapshot "${step_id}_pre"
 
-  printf "\n${BOLD}======================================================================${NC}\n"
+  printf '\n%s======================================================================%s\n' "${BOLD}" "${NC}"
   printf "${YELLOW}HITL STEP [%s]:${NC} %s\n" "$step_id" "$step_title"
-  printf "${BOLD}----------------------------------------------------------------------${NC}\n"
+  printf '%s----------------------------------------------------------------------%s\n' "${BOLD}" "${NC}"
   printf "%b\n" "$instructions"
-  printf "${BOLD}======================================================================${NC}\n"
+  printf '%s======================================================================%s\n' "${BOLD}" "${NC}"
 
   if [[ ! -t 0 ]]; then
     error "Interactive TTY required for HITL debugging."
@@ -248,7 +249,7 @@ hitl_step() {
   [[ "$PROMPT_TIMEOUT" -gt 0 ]] && read_args=(-t "$PROMPT_TIMEOUT" "${read_args[@]}")
 
   local ready=""
-  read "${read_args[@]}" ready || exit 1
+  read -r "${read_args[@]}" ready || exit 1
   case "${ready,,}" in
     q|quit) exit 1 ;;
     s|skip)
@@ -266,7 +267,7 @@ EOF
   local action_start
   action_start="$(utc_now)"
   record_event "HUMAN_ACTION_START" "[$step_id] $step_title"
-  printf "${CYAN}>>> Telemetry active. Perform the action now...${NC}\n\n"
+  printf '%s>>> Telemetry active. Perform the action now...%s\n\n' "${CYAN}" "${NC}"
 
   while true; do
     read -r -p "${BOLD}Outcome: [p]ass / [f]ail (issue observed) / [n]ote / [r]etry: ${NC}" outcome
@@ -298,7 +299,7 @@ EOF
         ;;
       r|retry)
         record_event "HUMAN_ACTION_RETRY" "[$step_id] Operator retrying step"
-        printf "${CYAN}>>> Marker recorded. Retry the action now...${NC}\n"
+        printf '%s>>> Marker recorded. Retry the action now...%s\n' "${CYAN}" "${NC}"
         ;;
       *)
         printf "Invalid choice. Enter p (pass), f (fail), n (note), or r (retry).\n"

@@ -1,95 +1,61 @@
 ---
 name: setup-pre-commit
-description: Set up Python pre-commit framework hooks, tailored for repos containing Python (uv, hatch, pytest, ty type checking), Terraform (native tests), Ansible (molecule), and Markdown docs (rumdl).
+description: Set up the Python pre-commit framework (.pre-commit-config.yaml) with hooks tailored to what the repo contains, covering Python (uv, hatch, ruff, pytest, ty), Terraform, Ansible (ansible-lint, molecule), Markdown (rumdl), TOML (taplo), and shell scripts (shellcheck). Use when the user wants pre-commit hooks, git hooks, commit-time linting or formatting, or asks to add or fix a .pre-commit-config.yaml.
+compatibility: Requires git, Python with uv (or pip), and network access to fetch hook repositories.
 disable-model-invocation: true
 ---
 
-# Setup Pre-Commit Hooks (Python Framework & Multi-Tool Edition)
+# Setup Pre-Commit Hooks
 
-Set up the **Python pre-commit framework** (`pre-commit`) in the current repository, adapted for our standard multi-tool tech stacks: **Python**, **Terraform**, **Ansible**, and **Markdown docs**.
+Set up the Python `pre-commit` framework in the current repository, with hooks matched to the stacks actually present.
 
-## Preferences & Tool Stack
+## Tool stack
 
-- **Framework**: Python `pre-commit` (`.pre-commit-config.yaml`)
-- **Python**: Managed with `uv`, builds with `hatch`, unit testing with `pytest`, type checking with `ty` (or standard `mypy`/pyright fallback), formatting/linting via ruff/black as appropriate.
-- **Markdown Docs**: `rumdl` (or standard markdownlint/prettier).
-- **Terraform**: Native terraform validation, formatting (`terraform fmt`), and native terraform testing (`test`).
-- **Ansible**: Linting via `ansible-lint`, testing via `molecule`.
-
----
+- **Python**: `uv` for environments, `hatch` builds, `pytest` tests, `ty` type checking (fall back to `mypy`/pyright),
+  `ruff` lint + format.
+- **Markdown**: `rumdl` check + fmt.
+- **TOML**: `taplo` format + lint.
+- **Shell**: `shellcheck`.
+- **Terraform**: `terraform fmt`, `terraform validate`, native `terraform test`.
+- **Ansible**: `ansible-lint`, `molecule`.
 
 ## Steps
 
-### 1. Detect Repository Components
+1. **Detect components.** Enable a stack only when its signal is present:
+   - Python: `pyproject.toml`, `uv.lock`, `requirements.txt`, or `.py` files.
+   - Terraform: `.tf` files or a `terraform/` directory.
+   - Ansible: `playbooks/`, `roles/`, `ansible.cfg`, or `molecule/`.
+   - Markdown: `.md` files or `docs/`.
+   - TOML: `.toml` files (always true when Python is).
+   - Shell: `.sh`/`.bash` files or scripts with a `bash`/`sh` shebang.
 
-Inspect the repository structure to determine which hooks to enable:
-- **Python**: Presence of `pyproject.toml`, `uv.toml`, `requirements.txt`, or `.py` files. (Check for `hatch` build system, `pytest`, and `ty` type checker).
-- **Terraform**: Presence of `.tf` files or `terraform/` directories.
-- **Ansible**: Presence of `playbooks/`, `roles/`, `ansible.cfg`, or `molecule/` directories.
-- **Markdown Docs**: Presence of `.md` files or `docs/` directories (configure `rumdl`).
+2. **Write the config.** Start from [assets/pre-commit-config.yaml](assets/pre-commit-config.yaml). Delete the blocks
+   for stacks not detected in step 1. If `.pre-commit-config.yaml` already exists, merge into it rather than
+   overwriting.
 
-### 2. Install & Configure pre-commit
+3. **Install the framework and hooks.**
 
-Ensure `pre-commit` is available (via `uv pip install pre-commit` or `pip install pre-commit`).
+   ```bash
+   uv tool install pre-commit   # or: pip install pre-commit
+   pre-commit autoupdate
+   pre-commit install
+   ```
 
-Create or update `.pre-commit-config.yaml` at the repo root with standard hooks tailored to the detected tech stack:
+4. **Verify.** Run `pre-commit run --all-files`. Fix config errors and re-run until every hook passes or only reports
+   genuine findings in the user's code. Report those findings; leave fixing them to the user unless asked.
 
-<pre-commit-template>
-repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-added-large-files
-      - id: check-toml
+5. **Commit.** Stage `.pre-commit-config.yaml` and any related config, then commit:
+   `chore: set up pre-commit hooks for <detected stacks>`
 
-  # Python / uv / ty / pytest / hatch
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.0
-    hooks:
-      - id: ruff
-        args: [--fix]
-      - id: ruff-format
+## Gotchas
 
-  # Markdown linting via rumdl (or standard markdown linter)
-  - repo: https://github.com/rumdl/rumdl
-    rev: v0.1.0 # (or latest stable)
-    hooks:
-      - id: rumdl
-
-  # Terraform validation & formatting
-  - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.96.2
-    hooks:
-      - id: terraform_fmt
-      - id: terraform_validate
-
-  # Ansible linting
-  - repo: https://github.com/ansible/ansible-lint
-    rev: v25.1.0
-    hooks:
-      - id: ansible-lint
-</pre-commit-template>
-
-*(Note: Prune or adjust hooks based on what was actually detected in Step 1).*
-
-### 3. Install Git Hooks
-
-Run:
-```bash
-pre-commit install
-```
-
-### 4. Verify & Test
-
-Run pre-commit across all files to verify everything is working smoothly:
-```bash
-pre-commit run --all-files
-```
-
-### 5. Commit
-
-Stage the `.pre-commit-config.yaml` and any related configuration files, then commit with message (adapt as needed):
-`chore: set up pre-commit hooks for python, terraform, ansible, and markdown`
+- The `rev:` pins in the template age quickly. Always run `pre-commit autoupdate` before the first `run`; never
+  hand-edit a pin to a version you have not seen in the hook repo's tags.
+- Auto-fixing hooks (`ruff-check --fix`, `rumdl-fmt`, `taplo-format`, `end-of-file-fixer`, `trailing-whitespace`) modify
+  files and report failure on the first run. Run a second time before concluding a hook is broken.
+- `terraform_validate` needs `terraform init` to have run in each module directory; if it fails on missing providers,
+  init first.
+- `ansible-lint` needs the project's collections installed (`ansible-galaxy install -r requirements.yml`) or it reports
+  spurious errors.
+- The `ty` hook is a local `uv run ty check`, so it needs `ty` in the project's dev dependencies (`uv add --dev ty`).
+- The rumdl hooks live in `rvben/rumdl-pre-commit`, not the main `rvben/rumdl` repo.

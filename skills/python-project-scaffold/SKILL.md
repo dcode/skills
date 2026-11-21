@@ -9,6 +9,7 @@ description: >-
   between sessions. Use when the user asks to start, scaffold, bootstrap or "set up" a Python
   project, package or MCP server, or to bring an existing Python repo up to these
   conventions. Not for one-off scripts that will never be a package.
+compatibility: Requires python3, uv, and git; network access to resolve dependencies and hook revisions.
 ---
 
 # Python project scaffold
@@ -43,7 +44,7 @@ unittest) unless the user asks.
 
 ### 1. Gather the inputs
 
-Ask only for what cannot be inferred. Use `AskUserQuestion` for the unknowns in one round:
+Ask only for what cannot be inferred, and ask all the unknowns in a single round:
 
 | Input | Default | Notes |
 |---|---|---|
@@ -62,8 +63,8 @@ DESIGN.md's Problem Statement. If the user has already described it, use that.
 
 ### 2. Generate the files
 
-Run the bundled generator. It is stdlib-only and only writes files: it never installs,
-fetches or commits.
+Run the bundled generator, [scripts/scaffold.py](scripts/scaffold.py); `<skill-dir>` below is this skill's directory. It
+is stdlib-only and only writes files: it never installs, fetches or commits.
 
 ```bash
 python3 <skill-dir>/scripts/scaffold.py <target-dir> \
